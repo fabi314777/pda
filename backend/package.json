@@ -1,0 +1,22 @@
+{
+  "name": "wms-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "seed": "node src/db/seed.js",
+    "build:frontend": "cd ../frontend && npm install && npm run build",
+    "start": "node src/db/seed.js; node src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1",
+    "xlsx": "^0.18.5",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: bodega-wms
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build:frontend
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+    # NOTA: el plan gratuito de Render usa disco efímero — la base de datos
+    # SQLite (y por lo tanto los datos que cargues en producción) se reinicia
+    # en cada despliegue/reinicio del servicio. Para uso real y permanente,
+    # agrega un disco persistente (Render → Disks) montado en /backend/src/db,
+    # o migra a una base de datos gestionada (Postgres/MySQL administrado).
