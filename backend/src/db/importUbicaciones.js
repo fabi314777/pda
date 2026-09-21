@@ -1,7 +1,7 @@
 import XLSX from 'xlsx';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import db from './index.js';
+import db, { withTransaction } from './index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FILE_PATH = path.join(__dirname, '..', '..', 'data', 'Ubicaciones_Bodega.xlsx');
@@ -47,7 +47,7 @@ export function importUbicaciones({ usuarioId = null } = {}) {
 
   let posicionesCreadas = 0, palletsCreados = 0, omitidas = 0;
 
-  const tx = db.transaction(() => {
+  const tx = () => {
     for (let i = 1; i < rowsDated.length; i++) {
       const r = rowsDated[i];
       if (!r || (r[COL.RACK] == null && r[COL.SECTOR] == null)) continue;
@@ -102,9 +102,9 @@ export function importUbicaciones({ usuarioId = null } = {}) {
         palletsCreados++;
       }
     }
-  });
+  };
 
-  tx();
+  withTransaction(tx);
   return { posicionesCreadas, palletsCreados, omitidas };
 }
 

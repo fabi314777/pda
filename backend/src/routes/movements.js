@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import db from '../db/index.js';
+import db, { withTransaction } from '../db/index.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAudit } from '../utils/audit.js';
 
@@ -35,7 +35,7 @@ router.post('/', requirePermission('pallets.mover'), (req, res) => {
 
   const anteriorId = pallet.position_id;
 
-  const tx = db.transaction(() => {
+  withTransaction(() => {
     db.prepare(`UPDATE positions SET estado = 'LIBRE', pallet_actual_id = NULL WHERE id = ?`).run(anteriorId);
     db.prepare(`UPDATE positions SET estado = 'OCUPADA', pallet_actual_id = ? WHERE id = ?`).run(pallet.id, nueva.id);
     db.prepare(`UPDATE pallets SET position_id = ? WHERE id = ?`).run(nueva.id, pallet.id);
@@ -46,7 +46,6 @@ router.post('/', requirePermission('pallets.mover'), (req, res) => {
       valorAnterior: codigoPallet, valorNuevo: codigoPosicionNueva, motivo,
     });
   });
-  tx();
 
   res.json({ mensaje: 'Movimiento registrado correctamente' });
 });

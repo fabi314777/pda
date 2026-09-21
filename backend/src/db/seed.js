@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import db from './index.js';
+import db, { withTransaction } from './index.js';
 import { importUbicaciones } from './importUbicaciones.js';
 
 const already = db.prepare('SELECT COUNT(*) c FROM roles').get().c;
@@ -10,7 +10,7 @@ if (already > 0) {
 
 let adminId, opUserId;
 
-const insertBase = db.transaction(() => {
+function insertBase() {
   // Roles
   const roleStmt = db.prepare('INSERT INTO roles (nombre, descripcion) VALUES (?, ?)');
   const rAdmin = roleStmt.run('ADMINISTRADOR', 'Acceso completo, usuarios, configuración, auditoría').lastInsertRowid;
@@ -46,9 +46,9 @@ const insertBase = db.transaction(() => {
   adminId = userStmt.run('Carlos Ramírez', 'admin@wms.demo', hash, rAdmin).lastInsertRowid;
   userStmt.run('Luisa Fernández', 'supervisor@wms.demo', hash, rSup);
   opUserId = userStmt.run('Pedro Gómez', 'operador@wms.demo', hash, rOp).lastInsertRowid;
-});
+}
 
-insertBase();
+withTransaction(insertBase);
 console.log('[seed] Usuarios y datos de prueba creados.');
 
 console.log('[seed] Importando ubicaciones y stock real desde Ubicaciones_Bodega.xlsx ...');

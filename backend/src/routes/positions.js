@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import db from '../db/index.js';
+import db, { withTransaction } from '../db/index.js';
 import { requireAuth, requirePermission } from '../middleware/auth.js';
 import { logAudit } from '../utils/audit.js';
 
@@ -55,14 +55,13 @@ router.post('/asignar', requirePermission('posiciones.asignar'), (req, res) => {
   if (!position) return res.status(404).json({ error: 'Posición no encontrada' });
   if (position.estado !== 'LIBRE') return res.status(409).json({ error: 'No se puede asignar: la posición no está libre' });
 
-  const tx = db.transaction(() => {
+  withTransaction(() => {
     db.prepare(`UPDATE pallets SET estado = 'ALMACENADO', position_id = ? WHERE id = ?`).run(position.id, pallet.id);
     db.prepare(`UPDATE positions SET estado = 'OCUPADA', pallet_actual_id = ? WHERE id = ?`).run(pallet.id, position.id);
     db.prepare(`INSERT INTO pallet_movements (pallet_id, position_anterior_id, position_nueva_id, usuario_id, motivo)
       VALUES (?, NULL, ?, ?, 'Asignación inicial de posición')`).run(pallet.id, position.id, req.user.id);
     logAudit({ usuarioId: req.user.id, accion: 'ASIGNACION_POSICION', entidad: 'pallet', entidadId: pallet.id, valorAnterior: 'VALIDADO', valorNuevo: `ALMACENADO en ${codigoPosicion}` });
   });
-  tx();
 
   res.json({ mensaje: 'Posición asignada correctamente', pallet: codigoPallet, posicion: codigoPosicion });
 });

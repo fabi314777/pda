@@ -9,12 +9,12 @@ Proyecto **nuevo e independiente** del sistema NODO (Electron/SQLite) que ya tie
 
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS v4, react-router-dom, recharts, lucide-react, html5-qrcode
 - **Backend:** Node.js + Express (API REST)
-- **Base de datos:** SQLite (better-sqlite3), con esquema normalizado y sintaxis compatible con MySQL — migrar a MySQL más adelante es solo cambiar el driver, no el diseño de tablas ni las consultas (son SQL estándar)
+- **Base de datos:** SQLite, usando el módulo `node:sqlite` incorporado en Node.js (sin dependencias nativas que compilar/descargar — requiere Node 22+), con esquema normalizado y sintaxis compatible con MySQL — migrar a MySQL más adelante es solo cambiar el driver, no el diseño de tablas ni las consultas (son SQL estándar)
 - **PWA:** instalable en Android/iOS/desktop (ícono en pantalla de inicio, funciona como app)
 
 ## 1. Requisitos
 
-- Node.js 18 o superior
+- Node.js **22 o superior** (necesario para `node:sqlite`, el módulo de base de datos incorporado que usa este proyecto)
 
 ## 2. Instalación
 
@@ -144,6 +144,14 @@ frontend/
 - Migración de SQLite → MySQL si decides desplegar en un servidor real
 
 ## 9. Novedades de esta etapa
+
+- **Migración de base de datos**: se reemplazó `better-sqlite3` (dependencia
+  nativa que requería compilar/descargar un binario) por `node:sqlite`, el
+  módulo de SQLite incorporado en Node.js 22+. Esto elimina por completo los
+  errores de despliegue tipo "invalid ELF header" que aparecían en Render
+  cuando el binario nativo se corrompía durante el build — ahora no hay nada
+  que compilar ni descargar, es parte del propio Node. Requiere Node 22 o
+  superior (ya actualizado en `render.yaml` y en `engines` del backend).
 
 - **Configuración completa (ya no es un placeholder)**:
   - **Sectores y racks**: crear sectores nuevos, crear racks dentro de un sector,
