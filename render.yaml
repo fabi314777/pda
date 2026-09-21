@@ -13,3 +13,5 @@ services:
         value: production
       - key: NODE_VERSION
         value: "20.18.1"
+       - key: npm_config_build_from_source 
+        value: "true"
