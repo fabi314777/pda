@@ -5,12 +5,12 @@
   "engines": {
     "node": "22.x"
   },
-  "scripts": {
-    "dev": "node src/server.js",
-    "seed": "node src/db/seed.js",
-    "build:frontend": "cd ../frontend && npm install --include=dev && npm run build",
-    "start": "node src/db/seed.js && node src/server.js"
-  },
+ "scripts": {
+  "dev": "node --experimental-sqlite src/server.js",
+  "seed": "node --experimental-sqlite src/db/seed.js",
+  "build:frontend": "cd ../frontend && npm install --include=dev && npm run build",
+  "start": "node --experimental-sqlite src/db/seed.js && node --experimental-sqlite src/server.js"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
